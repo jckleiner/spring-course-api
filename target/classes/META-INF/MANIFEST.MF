@@ -1,13 +1,4 @@
 Manifest-Version: 1.0
-Implementation-Title: course-api
-Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: Can
-Specification-Vendor: Pivotal Software, Inc.
-Specification-Title: course-api
-Implementation-Vendor-Id: com.greydev
-Build-Jdk: 1.8.0_201
-Specification-Version: 0.0.1-SNAPSHOT
-Implementation-URL: http://projects.spring.io/spring-boot/course-api/
+Build-Jdk-Spec: 1.8
 Created-By: Maven Integration for Eclipse
-Implementation-Vendor: Pivotal Software, Inc.
 

@@ -1,9 +1,18 @@
 package com.greydev.courseapi.topic;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
 public class Topic {
 
+	@Id
+	@Column(name = "topic_id")
 	private String id;
+	@Column(name = "topic_name")
 	private String name;
+	@Column(name = "topic_description")
 	private String description;
 
 	public String getId() {

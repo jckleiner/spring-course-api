@@ -23,22 +23,27 @@ public class TopicService {
 		return resultList;
 	}
 
-	public Topic getTopic(String id) {
-		// .findById(id) came with spring-boot-parent 2.0+
-		Optional<Topic> optional = topicRepository.findById(id);
+	public Topic getTopic(String topicId) {
+		// .findById(topicId) came with spring-boot-parent 2.0+
+		Optional<Topic> optional = topicRepository.findById(topicId);
 
 		try {
 			return optional.get(); // can throw NoSuchElementEx
 		}
 		catch (NoSuchElementException e) {
-			System.out.println("No such element with id: " + id);
+			System.out.println("No such element with topicId: " + topicId);
 			return null;
 		}
 	}
 
 	public Topic addTopic(Topic topic) {
+
+		// remember to set bi-directional relationship
+		// courses have 'Topic topic' : null
+		topic.getCourses().forEach(c -> c.setTopic(topic));
+
 		if (topicRepository.existsById(topic.getId())) {
-			throw new RuntimeException("topic id already exists");
+			throw new RuntimeException("topic topicId already exists");
 		}
 		Topic savedTopic = topicRepository.save(topic);
 		if (savedTopic == null) {
@@ -47,8 +52,8 @@ public class TopicService {
 		return savedTopic;
 	}
 
-	public Topic updateTopic(String id, Topic newTopic) {
-		newTopic.setId(id);
+	public Topic updateTopic(String topicId, Topic newTopic) {
+		newTopic.setId(topicId);
 
 		Topic savedTopic = topicRepository.save(newTopic);
 		if (savedTopic == null) {
@@ -57,15 +62,15 @@ public class TopicService {
 		return savedTopic;
 	}
 
-	public void deleteTopic(String id) {
-		Objects.requireNonNull(id, "id can't be null");
+	public void deleteTopic(String topicId) {
+		Objects.requireNonNull(topicId, "topicId can't be null");
 
 		try {
-			// .deleteById(id) came with spring-boot-parent 2.0+
-			topicRepository.deleteById(id);
+			// .deleteById(topicId) came with spring-boot-parent 2.0+
+			topicRepository.deleteById(topicId);
 		}
 		catch (EmptyResultDataAccessException e) {
-			System.out.println("failed delete by id: " + id);
+			System.out.println("failed delete by topicId: " + topicId);
 		}
 	}
 

@@ -20,24 +20,26 @@ public class TopicController {
 		return topicService.getAllTopics();
 	}
 
-	@RequestMapping(method = RequestMethod.GET, value = "/topics/{id}")
-	public Topic getTopic(@PathVariable String id) {
-		return topicService.getTopic(id);
+	@RequestMapping(method = RequestMethod.GET, value = "/topics/{topicId}")
+	public Topic getTopic(@PathVariable String topicId) {
+		return topicService.getTopic(topicId);
 	}
 
 	@RequestMapping(method = RequestMethod.POST, value = "/topics")
 	public Topic addTopic(@RequestBody Topic topic) {
+		System.out.println(" *** addTopic, courses found:");
+		topic.getCourses().forEach(c -> System.out.println(c.getId()));
 		return topicService.addTopic(topic);
 	}
 
-	@RequestMapping(method = RequestMethod.PUT, value = "/topics/{id}")
-	public Topic updateTopic(@PathVariable String id, @RequestBody Topic topic) {
-		return topicService.updateTopic(id, topic);
+	@RequestMapping(method = RequestMethod.PUT, value = "/topics/{topicId}")
+	public Topic updateTopic(@PathVariable String topicId, @RequestBody Topic topic) {
+		return topicService.updateTopic(topicId, topic);
 	}
 
-	@RequestMapping(method = RequestMethod.DELETE, value = "/topics/{id}")
-	public void deleteTopic(@PathVariable String id) {
-		topicService.deleteTopic(id);
+	@RequestMapping(method = RequestMethod.DELETE, value = "/topics/{topicId}")
+	public void deleteTopic(@PathVariable String topicId) {
+		topicService.deleteTopic(topicId);
 	}
 
 }

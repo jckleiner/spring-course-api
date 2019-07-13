@@ -10,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.greydev.courseapi.course.CourseRepository;
+
 @Service
 public class TopicService {
 
 	@Autowired
 	private TopicRepository topicRepository;
+	@Autowired
+	private CourseRepository courseRepository;
 
 	public List<Topic> getAllTopics() {
 		List<Topic> resultList = new ArrayList<>();
@@ -38,13 +42,20 @@ public class TopicService {
 
 	public Topic addTopic(Topic topic) {
 
+		if (topicRepository.existsById(topic.getId())) {
+			throw new RuntimeException("topic topicId already exists: " + topic.getId());
+		}
+		// TODO check if child id's already exist -> throw exception
+		topic.getCourses().forEach(course -> {
+			if (courseRepository.existsById(course.getId())) {
+				throw new RuntimeException("courseId already exists: " + course.getId());
+			}
+		});
+
 		// remember to set bi-directional relationship
 		// courses have 'Topic topic' : null
 		topic.getCourses().forEach(c -> c.setTopic(topic));
 
-		if (topicRepository.existsById(topic.getId())) {
-			throw new RuntimeException("topic topicId already exists");
-		}
 		Topic savedTopic = topicRepository.save(topic);
 		if (savedTopic == null) {
 			throw new RuntimeException("topic couln't be saved");
@@ -52,10 +63,10 @@ public class TopicService {
 		return savedTopic;
 	}
 
-	public Topic updateTopic(String topicId, Topic newTopic) {
-		newTopic.setId(topicId);
+	public Topic updateTopic(String topicId, Topic topic) {
+		topic.setId(topicId);
 
-		Topic savedTopic = topicRepository.save(newTopic);
+		Topic savedTopic = topicRepository.save(topic);
 		if (savedTopic == null) {
 			throw new RuntimeException("topic couln't be saved");
 		}

@@ -39,7 +39,7 @@ public class CourseService {
 	}
 
 	public Course addCourse(String topicId, Course course) {
-		course.setTopic(new Topic(topicId, "", ""));
+		course.setTopic(new Topic(topicId, "", "")); // TODO Find a better solution
 
 		if (courseRepository.existsById(course.getId())) {
 			throw new RuntimeException("course id already exists");

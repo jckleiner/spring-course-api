@@ -18,20 +18,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		// user credentials will be stored in memory each time our application has started
 		// later we will use a database 
 		auth.inMemoryAuthentication()
-				.withUser("admin").password(passwordEncoder().encode("admin123")).roles("ADMIN")
+				.withUser("admin")
+				.password(passwordEncoder().encode("admin123"))
+				.roles("ADMIN")
+				.authorities("ACCESS_TEST1", "ACCESS_TEST2")
 				.and()
-				.withUser("can").password(passwordEncoder().encode("can123")).roles("USER")
+				.withUser("can")
+				.password(passwordEncoder().encode("can123"))
+				.roles("USER")
 				.and()
-				.withUser("manager").password(passwordEncoder().encode("manager123")).roles("MANAGER");
+				.withUser("manager")
+				.password(passwordEncoder().encode("manager123"))
+				.roles("MANAGER")
+				.authorities("ACCESS_TEST1");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
 				.antMatchers("/").permitAll() // no auth needed to access
-				.antMatchers("/profile/").authenticated()
-				.antMatchers("/admin/").hasRole("ADMIN")
-				.antMatchers("/management/").hasAnyRole("ADMIN", "MANAGER")
+				.antMatchers("/profile/**").authenticated()
+				.antMatchers("/admin/**").hasRole("ADMIN")
+				.antMatchers("/management/**").hasAnyRole("ADMIN", "MANAGER")
+				.antMatchers("/api/test1").hasAuthority("ACCESS_TEST1")
+				.antMatchers("/api/test2").hasAuthority("ACCESS_TEST2")
 				.and()
 				.httpBasic();
 	}

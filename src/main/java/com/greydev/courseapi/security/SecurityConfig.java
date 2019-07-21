@@ -1,7 +1,9 @@
 package com.greydev.courseapi.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,24 +15,25 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	@Autowired
+	private UserPrincipalDetailsService userPrincipalDetailsService;
+
+	@Bean
+	public DaoAuthenticationProvider authProvider() {
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+		authProvider.setPasswordEncoder(passwordEncoder());
+		authProvider.setUserDetailsService(userPrincipalDetailsService);
+		return authProvider;
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		// user credentials will be stored in memory each time our application has started
-		// later we will use a database 
-		auth.inMemoryAuthentication()
-				.withUser("admin")
-				.password(passwordEncoder().encode("admin123"))
-				.roles("ADMIN")
-				.authorities("ACCESS_TEST1", "ACCESS_TEST2")
-				.and()
-				.withUser("can")
-				.password(passwordEncoder().encode("can123"))
-				.roles("USER")
-				.and()
-				.withUser("manager")
-				.password(passwordEncoder().encode("manager123"))
-				.roles("MANAGER")
-				.authorities("ACCESS_TEST1");
+	protected void configure(AuthenticationManagerBuilder auth) {
+		auth.authenticationProvider(authProvider());
 	}
 
 	@Override
@@ -40,14 +43,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/profile/**").authenticated()
 				.antMatchers("/admin/**").hasRole("ADMIN")
 				.antMatchers("/management/**").hasAnyRole("ADMIN", "MANAGER")
-				.antMatchers("/api/test1").hasAuthority("ACCESS_TEST1")
-				.antMatchers("/api/test2").hasAuthority("ACCESS_TEST2")
+				.antMatchers("/api/test1").hasAnyAuthority("ACCESS_TEST1", "ROLE_MANAGER", "ROLE_ADMIN")
+				.antMatchers("/api/test2").hasAnyAuthority("ACCESS_TEST2", "ROLE_ADMIN")
 				.and()
 				.httpBasic();
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 }

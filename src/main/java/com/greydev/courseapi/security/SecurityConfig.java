@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -46,7 +47,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/test1").hasAnyAuthority("ACCESS_TEST1", "ROLE_MANAGER", "ROLE_ADMIN")
 				.antMatchers("/api/test2").hasAnyAuthority("ACCESS_TEST2", "ROLE_ADMIN")
 				.and()
-				.httpBasic();
+				// .httpBasic();
+				.formLogin().loginPage("/login").permitAll()
+				.and()
+				.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+				.logoutSuccessUrl("/")
+				.and()
+				.rememberMe().alwaysRemember(true);
 	}
 
 }
